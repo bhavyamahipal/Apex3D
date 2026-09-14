@@ -6,7 +6,7 @@
     },
     "PETG-HS": {
       "available": false,
-      "colors": ["Black", "Orange", "Transparent"]
+      "colors": []
     },
     "TPU": {
       "available": false,
