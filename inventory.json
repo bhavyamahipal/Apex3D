@@ -1,0 +1,16 @@
+{
+  "materials": {
+    "PLA": {
+      "available": true,
+      "colors": ["Black", "White", "Red", "Orange", "Blue", "Grey"]
+    },
+    "PETG-HS": {
+      "available": true,
+      "colors": ["Black", "Orange", "Transparent"]
+    },
+    "TPU": {
+      "available": false,
+      "colors": []
+    }
+  }
+}
