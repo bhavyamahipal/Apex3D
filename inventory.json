@@ -2,7 +2,7 @@
   "materials": {
     "PLA": {
       "available": true,
-      "colors": ["White"]
+      "colors": ["White", "Black"]
     },
     "PETG-HS": {
       "available": false,
