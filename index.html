@@ -436,6 +436,133 @@ footer{background:var(--bg-panel); border-top:1px solid var(--border); padding:8
 .chip-row{display:flex; flex-wrap:wrap; gap:8px;}
 .chip{display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-muted); background:var(--bg-elevated); border:1px solid var(--border); padding:5px 10px 5px 6px; border-radius:20px;}
 .chip-dot{width:12px; height:12px; border-radius:50%; border:1px solid rgba(255,255,255,.25); flex-shrink:0;}
+.avail-sourcing{
+  display:flex; align-items:flex-start; gap:13px;
+  margin-top:22px; padding:16px 20px;
+  background:rgba(var(--accent-2-rgb),.06); border:1px solid rgba(var(--accent-2-rgb),.22);
+  border-radius:var(--radius-m); color:var(--text-muted); font-size:14px; line-height:1.65;
+}
+.avail-sourcing svg{ color:var(--accent-2); }
+.avail-sourcing strong{ color:var(--text); font-weight:600; }
+
+/* ================= PORTFOLIO (new) ================= */
+.portfolio-filters{display:flex; flex-wrap:wrap; gap:10px; margin-bottom:36px;}
+.pf-btn{
+  padding:8px 16px; border-radius:20px; border:1px solid var(--border);
+  background:var(--bg-elevated); color:var(--text-muted); font-size:13px; font-weight:500;
+  cursor:pointer; transition:all .25s ease; font-family:var(--font-body);
+}
+.pf-btn:hover{border-color:rgba(var(--accent-rgb),.45); color:var(--text);}
+.pf-btn.active{border-color:var(--accent); background:rgba(var(--accent-rgb),.1); color:var(--accent);}
+.portfolio-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:22px;}
+.pf-card{
+  background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius-m);
+  overflow:hidden; cursor:pointer;
+  transition:transform .35s cubic-bezier(.2,.8,.2,1), border-color .35s ease, box-shadow .35s ease;
+}
+.pf-card:hover{transform:translateY(-5px); border-color:rgba(var(--accent-rgb),.4); box-shadow:0 16px 40px -16px rgba(0,0,0,.5);}
+.pf-img{position:relative; aspect-ratio:4/3; background:var(--bg-elevated); overflow:hidden;}
+.pf-img img{width:100%; height:100%; object-fit:cover; transition:transform .5s ease;}
+.pf-card:hover .pf-img img{transform:scale(1.04);}
+.pf-img-placeholder{
+  width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:10px; color:var(--text-faint); font-size:13px;
+  background:repeating-linear-gradient(45deg,rgba(var(--accent-rgb),.04) 0 2px,transparent 2px 16px);
+}
+.pf-img-placeholder svg{opacity:.4;}
+.pf-img-count{
+  position:absolute; top:10px; right:10px; background:rgba(0,0,0,.6);
+  color:#fff; font-size:11.5px; padding:3px 9px; border-radius:20px; font-family:var(--font-mono);
+  backdrop-filter:blur(6px);
+}
+.pf-view3d{
+  position:absolute; bottom:10px; right:10px;
+  background:var(--accent); color:#0B0E14; border:none;
+  padding:6px 12px; border-radius:8px; font-size:12px; font-weight:600;
+  cursor:pointer; font-family:var(--font-body); display:flex; align-items:center; gap:5px;
+  opacity:0; transition:opacity .25s ease; pointer-events:none;
+}
+.pf-card:hover .pf-view3d.has-stl{opacity:1; pointer-events:auto;}
+.pf-body{padding:18px 20px 20px;}
+.pf-tags{display:flex; flex-wrap:wrap; gap:6px; margin-bottom:10px;}
+.pf-tag{font-size:11px; font-family:var(--font-mono); color:var(--accent); background:rgba(var(--accent-rgb),.1); border:1px solid rgba(var(--accent-rgb),.2); padding:2px 9px; border-radius:20px; letter-spacing:.04em;}
+.pf-body h4{font-size:16.5px; font-weight:600; margin-bottom:6px;}
+.pf-body .pf-desc{font-size:13.5px; color:var(--text-muted); margin-bottom:14px; display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;}
+.pf-meta{display:flex; flex-wrap:wrap; gap:12px; font-size:12px; font-family:var(--font-mono); color:var(--text-faint);}
+.pf-meta span b{color:var(--text-muted); font-weight:500;}
+.pf-price{font-family:var(--font-display); font-size:15px; font-weight:700; color:var(--accent);}
+.pf-empty{
+  grid-column:1/-1; text-align:center; padding:60px 20px; color:var(--text-faint); font-size:14px;
+}
+.pf-empty svg{margin:0 auto 14px; opacity:.3; display:block;}
+
+/* Portfolio modal */
+.pf-modal-bg{
+  position:fixed; inset:0; background:rgba(0,0,0,.75); z-index:300;
+  display:flex; align-items:center; justify-content:center; padding:20px;
+  opacity:0; pointer-events:none; transition:opacity .3s ease;
+  backdrop-filter:blur(6px);
+}
+.pf-modal-bg.open{opacity:1; pointer-events:auto;}
+.pf-modal{
+  background:var(--bg-panel); border:1px solid var(--border); border-radius:var(--radius-l);
+  max-width:860px; width:100%; max-height:92vh; overflow-y:auto;
+  transform:translateY(18px); transition:transform .35s cubic-bezier(.2,.8,.2,1);
+  position:relative;
+}
+.pf-modal-bg.open .pf-modal{transform:translateY(0);}
+.pf-modal-close{
+  position:sticky; top:0; left:0; right:0; z-index:10;
+  display:flex; justify-content:flex-end; padding:14px 18px 0;
+  background:linear-gradient(var(--bg-panel), transparent);
+}
+.pf-modal-close button{
+  background:var(--bg-elevated); border:1px solid var(--border); color:var(--text-muted);
+  width:34px; height:34px; border-radius:50%; font-size:18px; cursor:pointer; line-height:1;
+  transition:all .2s ease;
+}
+.pf-modal-close button:hover{border-color:var(--accent); color:var(--accent);}
+.pf-modal-inner{padding:0 30px 30px;}
+@media(max-width:600px){.pf-modal-inner{padding:0 18px 24px;}}
+
+/* Image gallery strip in modal */
+.pf-gallery{margin-bottom:24px;}
+.pf-gallery-main{
+  aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:var(--bg-elevated);
+  border:1px solid var(--border); margin-bottom:10px; position:relative;
+}
+.pf-gallery-main img{width:100%; height:100%; object-fit:cover;}
+.pf-gallery-main .pf-img-placeholder{height:100%;}
+.pf-gallery-thumbs{display:flex; gap:8px; flex-wrap:wrap;}
+.pf-gallery-thumbs img{
+  width:64px; height:64px; object-fit:cover; border-radius:8px;
+  border:2px solid var(--border); cursor:pointer; transition:border-color .2s ease;
+}
+.pf-gallery-thumbs img.active{border-color:var(--accent);}
+
+/* 3D viewer embed in modal */
+.pf-3d-frame{
+  aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:var(--bg-elevated);
+  border:1px solid var(--border); position:relative; margin-bottom:24px;
+}
+.pf-3d-frame canvas{width:100%; height:100%;}
+.pf-3d-frame .pf-3d-placeholder{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  flex-direction:column; gap:10px; color:var(--text-faint); font-size:13px; text-align:center;
+}
+.pf-3d-frame .pf-3d-loading{
+  position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+  background:var(--bg-elevated); font-family:var(--font-mono); font-size:13px; color:var(--accent); gap:10px;
+}
+.pf-3d-spinner{width:18px; height:18px; border:2px solid rgba(255,107,53,.3); border-top-color:var(--accent); border-radius:50%; animation:spin3d .7s linear infinite;}
+@keyframes spin3d{to{transform:rotate(360deg);}}
+.pf-modal-details{display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:18px;}
+@media(max-width:580px){.pf-modal-details{grid-template-columns:1fr;}}
+.pf-detail-block{background:var(--bg-elevated); border:1px solid var(--border); border-radius:10px; padding:16px 18px;}
+.pf-detail-block .dk{font-family:var(--font-mono); font-size:10.5px; text-transform:uppercase; letter-spacing:.08em; color:var(--text-faint); margin-bottom:5px; display:block;}
+.pf-detail-block .dv{font-size:15px; color:var(--text); font-weight:500;}
+.pf-modal-cta{margin-top:24px; display:flex; gap:12px; flex-wrap:wrap;}
+.pf-order-note{font-size:12.5px; color:var(--text-faint); margin-top:10px; font-family:var(--font-mono);}
 </style>
 </head>
 <body>
@@ -649,6 +776,10 @@ footer{background:var(--bg-panel); border-top:1px solid var(--border); padding:8
     <div class="avail-grid reveal" id="availGrid">
       <p class="avail-loading">Loading current availability…</p>
     </div>
+    <div class="avail-sourcing reveal">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; margin-top:1px;"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <p>Don't see the material or colour you need? Specific filaments can be sourced on request — this is available for orders with a minimum value of <strong>₹500</strong>. Mention your preferred specification in the order form or reach out on WhatsApp and we'll confirm availability before you commit.</p>
+    </div>
   </div>
 </section>
 
@@ -783,11 +914,25 @@ footer{background:var(--bg-panel); border-top:1px solid var(--border); padding:8
     <div class="section-head reveal">
       <div class="eyebrow">Our Work</div>
       <h2 class="section-title">Portfolio gallery</h2>
-      <p class="section-sub">A preview of what we print. Real photos of completed jobs get added here as we go.</p>
+      <p class="section-sub">Real photos of completed prints, straight off the Bambu Lab A1 Mini. Click any model to explore specs and spin it in 3D.</p>
     </div>
-    <div class="gallery-grid" id="galleryGrid"></div>
+    <div class="portfolio-filters reveal" id="portfolioFilters"></div>
+    <div class="portfolio-grid reveal" id="portfolioGrid">
+      <div class="pf-empty">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+        <div>Portfolio coming soon — first prints are on the way.</div>
+      </div>
+    </div>
   </div>
 </section>
+
+<!-- Portfolio detail modal -->
+<div class="pf-modal-bg" id="pfModalBg" onclick="closePfModal(event)">
+  <div class="pf-modal" id="pfModal">
+    <div class="pf-modal-close"><button onclick="closePfModalBtn()" aria-label="Close">✕</button></div>
+    <div class="pf-modal-inner" id="pfModalInner"></div>
+  </div>
+</div>
 
 <!-- ================= LIVE STATUS DEMO ================= -->
 <section id="live">
@@ -960,17 +1105,265 @@ document.getElementById('servicesGrid').innerHTML = SERVICES.map(s=>`
     <p>${s.d}</p>
   </div>`).join('');
 
-const GALLERY = [
-  {t:"Keychains", c:"key"}, {t:"Name Plates", c:"tag"}, {t:"Miniatures", c:"figure"},
-  {t:"Robotics Parts", c:"gear"}, {t:"Decorative Items", c:"vase"}, {t:"Cosplay Parts", c:"mask"},
-  {t:"Educational Models", c:"atom"}, {t:"Gifts", c:"gift"},
-];
-document.getElementById('galleryGrid').innerHTML = GALLERY.map(g=>`
-  <div class="g-card reveal">
-    <div class="g-bg"></div>
-    ${svgIcon(g.c,56)}
-    <div class="g-label"><b>${g.t}</b><span>Sample category · Apex3D</span></div>
-  </div>`).join('');
+/* ============ PORTFOLIO SYSTEM ============ */
+const PORTFOLIO_KEY = 'apex3d_portfolio';
+let pfModels = [];
+let pfActiveFilter = 'All';
+let pfActiveModel = null;
+
+// Active Three.js scene for portfolio viewer (only one at a time)
+let pfScene = null, pfCamera = null, pfRenderer = null, pfControls3d = null, pfMesh = null;
+
+async function loadPortfolio(){
+  try{
+    // Fetch portfolio.json from the same directory (works on GitHub Pages)
+    const res = await fetch('portfolio.json', {cache:'no-store'});
+    if(!res.ok) throw new Error('not found');
+    const data = await res.json();
+    pfModels = Array.isArray(data) ? data.filter(m => m.status === 'live') : [];
+  }catch(e){
+    // Fallback: load from localStorage (useful when testing locally without a server)
+    try{
+      const raw = localStorage.getItem(PORTFOLIO_KEY);
+      pfModels = raw ? JSON.parse(raw).filter(m => m.status === 'live') : [];
+    }catch(e2){ pfModels = []; }
+  }
+  renderPortfolioFilters();
+  renderPortfolioGrid();
+}
+
+function renderPortfolioFilters(){
+  const el = document.getElementById('portfolioFilters');
+  if(!pfModels.length){ el.innerHTML = ''; return; }
+  const allTags = ['All', ...new Set(pfModels.flatMap(m => m.tags || []))];
+  el.innerHTML = allTags.map(t =>
+    `<button class="pf-btn${t === pfActiveFilter ? ' active' : ''}" onclick="setPfFilter('${t}')">${t}</button>`
+  ).join('');
+}
+
+function setPfFilter(tag){
+  pfActiveFilter = tag;
+  document.querySelectorAll('.pf-btn').forEach(b => b.classList.toggle('active', b.textContent === tag));
+  renderPortfolioGrid();
+}
+
+function renderPortfolioGrid(){
+  const el = document.getElementById('portfolioGrid');
+  const filtered = pfActiveFilter === 'All' ? pfModels : pfModels.filter(m => (m.tags||[]).includes(pfActiveFilter));
+  if(!filtered.length){
+    el.innerHTML = `<div class="pf-empty">
+      <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+      <div>${pfModels.length ? 'No models in this category yet.' : 'Portfolio coming soon — first prints are on the way.'}</div>
+    </div>`;
+    return;
+  }
+  el.innerHTML = filtered.map(m => {
+    const cover = m.images && m.images[0];
+    const imgCount = m.images ? m.images.length : 0;
+    const tags = (m.tags||[]).map(t=>`<span class="pf-tag">${t}</span>`).join('');
+    return `<div class="pf-card" onclick="openPfModal('${m.id}')">
+      <div class="pf-img">
+        ${cover
+          ? `<img src="${cover}" alt="${m.name}" loading="lazy">`
+          : `<div class="pf-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg><span>${m.name}</span></div>`}
+        ${imgCount > 1 ? `<span class="pf-img-count">📷 ${imgCount}</span>` : ''}
+        ${m.stl ? `<button class="pf-view3d has-stl" onclick="open3DFromCard(event,'${m.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg> View 3D</button>` : '<button class="pf-view3d"></button>'}
+      </div>
+      <div class="pf-body">
+        ${tags ? `<div class="pf-tags">${tags}</div>` : ''}
+        <h4>${m.name}</h4>
+        <p class="pf-desc">${m.description}</p>
+        <div class="pf-meta">
+          ${m.material ? `<span><b>${m.material}</b></span>` : ''}
+          ${m.dims ? `<span>${m.dims}</span>` : ''}
+          ${m.color ? `<span>${m.color}</span>` : ''}
+          ${m.price ? `<span class="pf-price">₹${m.price}</span>` : ''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  // Re-observe new elements for reveal
+  el.querySelectorAll('.pf-card').forEach(card => { card.classList.add('reveal'); io.observe(card); });
+}
+
+function openPfModal(id){
+  const m = pfModels.find(x => x.id === id);
+  if(!m) return;
+  pfActiveModel = m;
+  const inner = document.getElementById('pfModalInner');
+  const images = m.images || [];
+  const tags = (m.tags||[]).map(t=>`<span class="pf-tag">${t}</span>`).join('');
+
+  // Gallery HTML
+  const mainImgHtml = images[0]
+    ? `<img id="pfMainImg" src="${images[0]}" alt="${m.name}">`
+    : `<div class="pf-img-placeholder" style="height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg><span>No photo yet</span></div>`;
+
+  const thumbsHtml = images.length > 1
+    ? `<div class="pf-gallery-thumbs">${images.map((src,i)=>`<img src="${src}" alt="Photo ${i+1}" class="${i===0?'active':''}" onclick="switchPfImg(this,'${src}')">`).join('')}</div>`
+    : '';
+
+  // 3D viewer section
+  const viewer3dHtml = m.stl ? `
+    <div style="margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
+      <span style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;">Interactive 3D</span>
+      <button class="btn btn-ghost" style="padding:7px 14px;font-size:12.5px;" onclick="loadPf3DViewer('${m.id}')">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg>
+        Load 3D View
+      </button>
+    </div>
+    <div class="pf-3d-frame" id="pf3dFrame">
+      <div class="pf-3d-placeholder">
+        <svg width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3"><path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M3 7l9 5 9-5M12 12v10"/></svg>
+        <span>Click "Load 3D View" to interact with the model</span>
+      </div>
+    </div>` : '';
+
+  // Detail blocks
+  const details = [
+    m.material && {k:'Material', v: m.material + (m.color ? ` · ${m.color}` : '')},
+    m.dims && {k:'Dimensions', v: m.dims},
+    m.printTime && {k:'Print Time', v: m.printTime},
+    m.price && {k:'Starting Price', v: `₹${m.price}`},
+  ].filter(Boolean);
+
+  inner.innerHTML = `
+    <div style="margin-bottom:18px;">
+      ${tags ? `<div class="pf-tags" style="margin-bottom:10px;">${tags}</div>` : ''}
+      <h2 style="font-size:24px; font-family:var(--font-display); margin-bottom:8px;">${m.name}</h2>
+      <p style="color:var(--text-muted); font-size:15px; line-height:1.65;">${m.description}</p>
+    </div>
+    ${images.length ? `<div class="pf-gallery"><div class="pf-gallery-main">${mainImgHtml}</div>${thumbsHtml}</div>` : ''}
+    ${viewer3dHtml}
+    ${details.length ? `<div class="pf-modal-details">${details.map(d=>`<div class="pf-detail-block"><span class="dk">${d.k}</span><span class="dv">${d.v}</span></div>`).join('')}</div>` : ''}
+    <div class="pf-modal-cta">
+      <a href="#order" class="btn btn-primary" onclick="prefillOrderFromPortfolio('${m.id}'); closePfModalBtn();">Order Something Similar →</a>
+      <a href="#pricing" class="btn btn-ghost" onclick="closePfModalBtn()">Get a Quote</a>
+    </div>
+    <p class="pf-order-note">Dimensions and price shown are for the specific print pictured — your order will be quoted based on your exact requirements.</p>
+  `;
+
+  document.getElementById('pfModalBg').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function switchPfImg(thumb, src){
+  document.getElementById('pfMainImg').src = src;
+  document.querySelectorAll('.pf-gallery-thumbs img').forEach(t => t.classList.remove('active'));
+  thumb.classList.add('active');
+}
+
+function open3DFromCard(e, id){
+  e.stopPropagation();
+  openPfModal(id);
+  // slight delay so modal renders first
+  setTimeout(() => loadPf3DViewer(id), 100);
+}
+
+function closePfModal(e){ if(e.target === document.getElementById('pfModalBg')) closePfModalBtn(); }
+function closePfModalBtn(){
+  document.getElementById('pfModalBg').classList.remove('open');
+  document.body.style.overflow = '';
+  destroyPf3DViewer();
+}
+
+/* 3D viewer — only one active at a time */
+function destroyPf3DViewer(){
+  if(pfRenderer){ pfRenderer.dispose(); pfRenderer = null; }
+  if(pfMesh && pfScene){ pfScene.remove(pfMesh); pfMesh.geometry.dispose(); pfMesh.material.dispose(); pfMesh = null; }
+  pfScene = null; pfCamera = null; pfControls3d = null;
+}
+
+function loadPf3DViewer(modelId){
+  const m = pfModels.find(x => x.id === modelId);
+  if(!m || !m.stl) return;
+  const frame = document.getElementById('pf3dFrame');
+  if(!frame) return;
+
+  destroyPf3DViewer();
+
+  // Show loading
+  frame.innerHTML = `<div class="pf-3d-loading"><div class="pf-3d-spinner"></div><span>Loading 3D model…</span></div>`;
+
+  if(typeof THREE === 'undefined'){ frame.innerHTML = '<div class="pf-3d-placeholder"><span>Three.js not loaded — check your internet connection.</span></div>'; return; }
+
+  // Decode base64 STL
+  const b64 = m.stl.split(',')[1];
+  const bin = atob(b64);
+  const buf = new ArrayBuffer(bin.length);
+  const view8 = new Uint8Array(buf);
+  for(let i=0;i<bin.length;i++) view8[i] = bin.charCodeAt(i);
+
+  try{
+    const loader = new THREE.STLLoader();
+    const geometry = loader.parse(buf);
+    geometry.computeVertexNormals();
+
+    // Create canvas inside frame
+    frame.innerHTML = '';
+    const canvas = document.createElement('canvas');
+    canvas.style.cssText = 'width:100%;height:100%;display:block;';
+    frame.appendChild(canvas);
+
+    pfScene = new THREE.Scene();
+    pfCamera = new THREE.PerspectiveCamera(45, frame.clientWidth/frame.clientHeight, 0.1, 5000);
+    pfRenderer = new THREE.WebGLRenderer({canvas, antialias:true, alpha:true});
+    pfRenderer.setPixelRatio(Math.min(window.devicePixelRatio,2));
+    pfRenderer.setSize(frame.clientWidth, frame.clientHeight);
+
+    pfScene.add(new THREE.AmbientLight(0xffffff, 0.6));
+    const dir1 = new THREE.DirectionalLight(0xffffff, 0.85); dir1.position.set(150,300,200); pfScene.add(dir1);
+    const dir2 = new THREE.DirectionalLight(0xffffff, 0.35); dir2.position.set(-150,-100,-200); pfScene.add(dir2);
+
+    // Center geometry
+    const pos = geometry.attributes.position;
+    let minX=Infinity,minY=Infinity,minZ=Infinity,maxX=-Infinity,maxY=-Infinity,maxZ=-Infinity;
+    for(let i=0;i<pos.count;i++){
+      const x=pos.getX(i),y=pos.getY(i),z=pos.getZ(i);
+      if(x<minX)minX=x; if(x>maxX)maxX=x; if(y<minY)minY=y; if(y>maxY)maxY=y; if(z<minZ)minZ=z; if(z>maxZ)maxZ=z;
+    }
+    const cx=(minX+maxX)/2, cy=(minY+maxY)/2, cz=(minZ+maxZ)/2;
+    const szY=maxY-minY;
+    geometry.translate(-cx,-cy,-cz);
+
+    const mat = new THREE.MeshStandardMaterial({color:0xFF6B35, metalness:0.25, roughness:0.5});
+    pfMesh = new THREE.Mesh(geometry, mat);
+    pfMesh.position.y = szY/2;
+    pfScene.add(pfMesh);
+
+    const maxDim = Math.max(maxX-minX, maxY-minY, maxZ-minZ, 1);
+    pfCamera.position.set(maxDim*1.6, maxDim*1.3, maxDim*1.6);
+    pfControls3d = new THREE.OrbitControls(pfCamera, pfRenderer.domElement);
+    pfControls3d.enableDamping = true;
+    pfControls3d.autoRotate = true;
+    pfControls3d.autoRotateSpeed = 1.6;
+    pfControls3d.target.set(0, szY/2, 0);
+    pfControls3d.update();
+
+    (function animate(){
+      if(!pfRenderer) return;
+      requestAnimationFrame(animate);
+      pfControls3d.update();
+      pfRenderer.render(pfScene, pfCamera);
+    })();
+  }catch(err){
+    frame.innerHTML = `<div class="pf-3d-placeholder"><span>Could not render 3D model: ${err.message}</span></div>`;
+  }
+}
+
+function prefillOrderFromPortfolio(id){
+  const m = pfModels.find(x => x.id === id);
+  if(!m) return;
+  try{
+    document.getElementById('oService').value = 'Custom 3D Printing';
+    if(m.material) document.getElementById('oMaterial').value = m.material.includes('PETG') ? 'PETG-HS' : 'PLA';
+    if(m.color) document.getElementById('oColor').value = m.color;
+    const notesEl = document.getElementById('oNotes');
+    notesEl.value = `Inspired by portfolio model: "${m.name}"${m.dims ? '\nReference dimensions: '+m.dims : ''}${m.material ? '\nMaterial: '+m.material : ''}`;
+  }catch(e){}
+}
+
+loadPortfolio();
 
 const reviewCard = r => `
   <div class="r-card">
