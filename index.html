@@ -532,15 +532,21 @@ footer{background:var(--bg-panel); border-top:1px solid var(--border); padding:8
 /* Image gallery strip in modal */
 .pf-gallery{margin-bottom:24px;}
 .pf-gallery-main{
-  aspect-ratio:16/9; border-radius:12px; overflow:hidden; background:var(--bg-elevated);
+  border-radius:12px; overflow:hidden; background:var(--bg-elevated);
   border:1px solid var(--border); margin-bottom:10px; position:relative;
+  display:flex; align-items:center; justify-content:center;
+  min-height:200px; max-height:480px;
 }
-.pf-gallery-main img{width:100%; height:100%; object-fit:cover;}
-.pf-gallery-main .pf-img-placeholder{height:100%;}
+.pf-gallery-main img{
+  width:100%; height:100%; max-height:480px;
+  object-fit:contain; display:block;
+}
+.pf-gallery-main .pf-img-placeholder{height:200px; width:100%;}
 .pf-gallery-thumbs{display:flex; gap:8px; flex-wrap:wrap;}
 .pf-gallery-thumbs img{
-  width:64px; height:64px; object-fit:cover; border-radius:8px;
+  width:68px; height:68px; object-fit:cover; border-radius:8px;
   border:2px solid var(--border); cursor:pointer; transition:border-color .2s ease;
+  background:var(--bg-elevated);
 }
 .pf-gallery-thumbs img.active{border-color:var(--accent);}
 
@@ -1244,10 +1250,10 @@ function openPfModal(id){
     ${viewer3dHtml}
     ${details.length ? `<div class="pf-modal-details">${details.map(d=>`<div class="pf-detail-block"><span class="dk">${d.k}</span><span class="dv">${d.v}</span></div>`).join('')}</div>` : ''}
     <div class="pf-modal-cta">
-      <a href="#order" class="btn btn-primary" onclick="prefillOrderFromPortfolio('${m.id}'); closePfModalBtn();">Order Something Similar →</a>
+      <button class="btn btn-primary" onclick="orderNowFromPortfolio('${m.id}')">🛒 Order Now →</button>
       <a href="#pricing" class="btn btn-ghost" onclick="closePfModalBtn()">Get a Quote</a>
     </div>
-    <p class="pf-order-note">Dimensions and price shown are for the specific print pictured — your order will be quoted based on your exact requirements.</p>
+    <p class="pf-order-note">Clicking Order Now closes this and fills the order form below with this model's exact details — just add your name and submit.</p>
   `;
 
   document.getElementById('pfModalBg').classList.add('open');
@@ -1360,16 +1366,53 @@ async function loadPf3DViewer(modelId){
   }
 }
 
-function prefillOrderFromPortfolio(id){
+function orderNowFromPortfolio(id){
   const m = pfModels.find(x => x.id === id);
   if(!m) return;
+  closePfModalBtn();
   try{
-    document.getElementById('oService').value = 'Custom 3D Printing';
-    if(m.material) document.getElementById('oMaterial').value = m.material.includes('PETG') ? 'PETG-HS' : 'PLA';
-    if(m.color) document.getElementById('oColor').value = m.color;
+    // Service
+    const svc = document.getElementById('oService');
+    if(svc) svc.value = 'Custom 3D Printing';
+
+    // Material — match select option exactly
+    const mat = document.getElementById('oMaterial');
+    if(mat && m.material){
+      const opt = Array.from(mat.options).find(o => o.value === m.material || o.text === m.material);
+      if(opt) mat.value = opt.value;
+    }
+
+    // Colour — exact colour from the model
+    const col = document.getElementById('oColor');
+    if(col) col.value = m.color || '';
+
+    // Notes — pre-written order description with all known details
     const notesEl = document.getElementById('oNotes');
-    notesEl.value = `Inspired by portfolio model: "${m.name}"${m.dims ? '\nReference dimensions: '+m.dims : ''}${m.material ? '\nMaterial: '+m.material : ''}`;
+    if(notesEl){
+      const lines = [
+        `I'd like to order: "${m.name}" (from the portfolio)`,
+        m.dims     ? `Dimensions: ${m.dims}`         : '',
+        m.material ? `Material:   ${m.material}`      : '',
+        m.color    ? `Colour:     ${m.color}`         : '',
+        m.printTime? `Print time: ${m.printTime}`     : '',
+        m.price    ? `Listed price: ₹${m.price}`      : '',
+        m.stlFile  ? `STL file available: ${m.stlFile}` : '',
+      ].filter(Boolean);
+      notesEl.value = lines.join('\n');
+    }
   }catch(e){}
+
+  // Scroll smoothly to the order section and highlight it briefly
+  setTimeout(() => {
+    const orderSection = document.getElementById('order');
+    if(orderSection){
+      orderSection.scrollIntoView({behavior:'smooth', block:'start'});
+      // Flash the section border so the user knows it was filled
+      orderSection.style.transition = 'box-shadow .3s ease';
+      orderSection.style.boxShadow = '0 0 0 3px rgba(var(--accent-rgb),.5)';
+      setTimeout(() => { orderSection.style.boxShadow = ''; }, 1800);
+    }
+  }, 300);
 }
 
 loadPortfolio();
