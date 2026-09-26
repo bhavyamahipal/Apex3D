@@ -9,6 +9,10 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<!-- Three.js core + required add-ons (STLLoader & OrbitControls were missing — both 3D viewers need them) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js" defer></script>
 <style>
 /* ================= DESIGN TOKENS ================= */
 :root{
@@ -1147,6 +1151,8 @@ function setPfFilter(tag){
   renderPortfolioGrid();
 }
 
+function pfAsset(filename){ return filename ? 'portfolio-assets/' + filename : ''; }
+
 function renderPortfolioGrid(){
   const el = document.getElementById('portfolioGrid');
   const filtered = pfActiveFilter === 'All' ? pfModels : pfModels.filter(m => (m.tags||[]).includes(pfActiveFilter));
@@ -1158,16 +1164,17 @@ function renderPortfolioGrid(){
     return;
   }
   el.innerHTML = filtered.map(m => {
-    const cover = m.images && m.images[0];
+    const coverFile = m.images && m.images[0];
+    const coverSrc = pfAsset(coverFile);
     const imgCount = m.images ? m.images.length : 0;
     const tags = (m.tags||[]).map(t=>`<span class="pf-tag">${t}</span>`).join('');
     return `<div class="pf-card" onclick="openPfModal('${m.id}')">
       <div class="pf-img">
-        ${cover
-          ? `<img src="${cover}" alt="${m.name}" loading="lazy">`
+        ${coverSrc
+          ? `<img src="${coverSrc}" alt="${m.name}" loading="lazy">`
           : `<div class="pf-img-placeholder"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg><span>${m.name}</span></div>`}
         ${imgCount > 1 ? `<span class="pf-img-count">📷 ${imgCount}</span>` : ''}
-        ${m.stl ? `<button class="pf-view3d has-stl" onclick="open3DFromCard(event,'${m.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg> View 3D</button>` : '<button class="pf-view3d"></button>'}
+        ${m.stlFile ? `<button class="pf-view3d has-stl" onclick="open3DFromCard(event,'${m.id}')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg> View 3D</button>` : '<button class="pf-view3d"></button>'}
       </div>
       <div class="pf-body">
         ${tags ? `<div class="pf-tags">${tags}</div>` : ''}
@@ -1182,7 +1189,6 @@ function renderPortfolioGrid(){
       </div>
     </div>`;
   }).join('');
-  // Re-observe new elements for reveal
   el.querySelectorAll('.pf-card').forEach(card => { card.classList.add('reveal'); io.observe(card); });
 }
 
@@ -1194,17 +1200,18 @@ function openPfModal(id){
   const images = m.images || [];
   const tags = (m.tags||[]).map(t=>`<span class="pf-tag">${t}</span>`).join('');
 
-  // Gallery HTML
-  const mainImgHtml = images[0]
-    ? `<img id="pfMainImg" src="${images[0]}" alt="${m.name}">`
+  // Gallery HTML — images are filenames, resolve via pfAsset()
+  const imgSrcs = images.map(fn => pfAsset(fn));
+  const mainImgHtml = imgSrcs[0]
+    ? `<img id="pfMainImg" src="${imgSrcs[0]}" alt="${m.name}">`
     : `<div class="pf-img-placeholder" style="height:100%;"><svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M12 2l9 5v10l-9 5-9-5V7z"/></svg><span>No photo yet</span></div>`;
 
-  const thumbsHtml = images.length > 1
-    ? `<div class="pf-gallery-thumbs">${images.map((src,i)=>`<img src="${src}" alt="Photo ${i+1}" class="${i===0?'active':''}" onclick="switchPfImg(this,'${src}')">`).join('')}</div>`
+  const thumbsHtml = imgSrcs.length > 1
+    ? `<div class="pf-gallery-thumbs">${imgSrcs.map((src,i)=>`<img src="${src}" alt="Photo ${i+1}" class="${i===0?'active':''}" onclick="switchPfImg(this,'${src}')">`).join('')}</div>`
     : '';
 
-  // 3D viewer section
-  const viewer3dHtml = m.stl ? `
+  // 3D viewer section — uses stlFile (filename), fetched at load time
+  const viewer3dHtml = m.stlFile ? `
     <div style="margin-bottom:6px; display:flex; justify-content:space-between; align-items:center;">
       <span style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-faint);text-transform:uppercase;letter-spacing:.08em;">Interactive 3D</span>
       <button class="btn btn-ghost" style="padding:7px 14px;font-size:12.5px;" onclick="loadPf3DViewer('${m.id}')">
@@ -1274,25 +1281,27 @@ function destroyPf3DViewer(){
   pfScene = null; pfCamera = null; pfControls3d = null;
 }
 
-function loadPf3DViewer(modelId){
+async function loadPf3DViewer(modelId){
   const m = pfModels.find(x => x.id === modelId);
-  if(!m || !m.stl) return;
+  if(!m || !m.stlFile) return;
   const frame = document.getElementById('pf3dFrame');
   if(!frame) return;
 
   destroyPf3DViewer();
-
-  // Show loading
   frame.innerHTML = `<div class="pf-3d-loading"><div class="pf-3d-spinner"></div><span>Loading 3D model…</span></div>`;
 
-  if(typeof THREE === 'undefined'){ frame.innerHTML = '<div class="pf-3d-placeholder"><span>Three.js not loaded — check your internet connection.</span></div>'; return; }
+  if(typeof THREE === 'undefined'){ frame.innerHTML = '<div class="pf-3d-placeholder"><span>Three.js not loaded — check your connection.</span></div>'; return; }
 
-  // Decode base64 STL
-  const b64 = m.stl.split(',')[1];
-  const bin = atob(b64);
-  const buf = new ArrayBuffer(bin.length);
-  const view8 = new Uint8Array(buf);
-  for(let i=0;i<bin.length;i++) view8[i] = bin.charCodeAt(i);
+  // Fetch the STL file directly from portfolio-assets/ — no size limit, no base64 overhead
+  let buf;
+  try{
+    const res = await fetch(pfAsset(m.stlFile));
+    if(!res.ok) throw new Error('Could not load ' + m.stlFile + ' (HTTP ' + res.status + ')');
+    buf = await res.arrayBuffer();
+  }catch(fetchErr){
+    frame.innerHTML = `<div class="pf-3d-placeholder"><span>Could not load STL: ${fetchErr.message}</span></div>`;
+    return;
+  }
 
   try{
     const loader = new THREE.STLLoader();
