@@ -1,0 +1,26 @@
+[
+  {
+    "id": "m_1790441191889",
+    "name": "Project Hail Mary Figure",
+    "description": "It is the model that Rocky gifts Grace in the model. The model is sized correcty to match the one in the movie.",
+    "material": "PLA",
+    "color": "Black",
+    "dims": "38mm x 55mm x 68mm",
+    "printTime": "2h 10min",
+    "price": 150,
+    "status": "live",
+    "tags": [
+      "Project Hail Mary",
+      "Decoration",
+      "Figure"
+    ],
+    "images": [
+      "Hail_Mary_Figure_3.webp",
+      "Hail_Mary_Figure_2.jpeg",
+      "Hail_Mary_Figure_1.jpeg"
+    ],
+    "stlFile": "Hail_Mary_Figure.3mf",
+    "createdAt": "2026-09-26T16:46:31.889Z",
+    "updatedAt": "2026-09-26T17:06:41.568Z"
+  }
+]
